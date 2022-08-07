@@ -32,7 +32,8 @@ class FlightSearch:
                 "date_to":kwargs["to_date"],
                 "one_for_city":"1",
                 "curr":"USD",
-                "flight_type":"round"
+                "flight_type":"round",
+                "max_stopovers":"0"
             }
             response = requests.get(
                 url=search_endpoint,
