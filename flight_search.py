@@ -12,7 +12,7 @@ class FlightSearch:
     # def __init__(self):
     #     pass
     
-
+    #from and to loc are iata codes
     def search_flights(from_loc: str, to_loc: list,**kwargs ) -> dict:
         from_date=dt.datetime.today().strftime("%d/%m/%Y")
         to_date=((dt.datetime.today() + dt.timedelta(days=30)).strftime("%d/%m/%Y"))
@@ -39,7 +39,7 @@ class FlightSearch:
         
         pass
     
-    def loc_to_iata(loc: str):
+    def loc_to_iata(loc: str) -> str:
         locations_endpoint = TEQUILA_ENDPOINT  + "locations/query"
         query_params = {
             "term":loc,   
@@ -50,7 +50,9 @@ class FlightSearch:
                 params= query_params,
                 headers=headers
             )
-        print(response.content)
+        locations_dict = response.json()["locations"]
+        iata_code = locations_dict[0]['code']
+        return iata_code
         pass
 
     pass
