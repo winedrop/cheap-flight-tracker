@@ -13,32 +13,37 @@ class FlightSearch:
     #     pass
     
     #from and to loc are iata codes
-    def search_flights(from_loc: str, to_loc: list,**kwargs ) -> dict:
+    ##returns flight info of cheapest flight to each location
+    def search_flights(from_loc: str, to_loc: list,**kwargs ) -> list:
         from_date=dt.datetime.today().strftime("%d/%m/%Y")
         to_date=((dt.datetime.today() + dt.timedelta(days=30)).strftime("%d/%m/%Y"))
         kwargs={
             "from_date":from_date,
             "to_date":to_date,
         }
-        global headers
         search_endpoint = TEQUILA_ENDPOINT + "v2/search"
+
+        search_results=[]
         for location in to_loc:
             search_params = {
                 "fly_from":from_loc,
                 "fly_to":location,
                 "date_from":kwargs["from_date"],
                 "date_to":kwargs["to_date"],
-                "one_for_city":"1"
+                "one_for_city":"1",
+                "curr":"USD"
             }
             response = requests.get(
                 url=search_endpoint,
                 params=search_params,
                 headers=headers
             )
-            print(response.json())
-        
+            search_results.append(response.json())
+        print(search_results)
+        return search_results
         pass
     
+    #takes in location query like "Los Angeles", returns "LAX"
     def loc_to_iata(loc: str) -> str:
         locations_endpoint = TEQUILA_ENDPOINT  + "locations/query"
         query_params = {
