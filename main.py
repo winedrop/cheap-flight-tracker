@@ -6,34 +6,42 @@ import json
 import pandas
 
 
+#processes raw flight search data(json) from tequila into FlightData object
+def search_to_flight_data(flight_origin_iata: str, flight_destination_iata) -> fd:
+    flight_data_dict = fs.search_flights(flight_origin_iata, [flight_destination_iata])
+    print(flight_data_dict)
+    price = flight_data_dict[0]["data"][0]["price"]
+    origin_city = flight_data_dict[0]["data"][0]["route"][0]["cityFrom"]
+    origin_airport = flight_data_dict[0]["data"][0]["route"][0]["flyFrom"]
+    destination_city = flight_data_dict[0]["data"][0]["route"][0]["cityTo"]
+    destination_airport = flight_data_dict[0]["data"][0]["route"][0]["flyTo"]
+    out_date = flight_data_dict[0]["data"][0]["route"][0]["local_departure"]
+    return_date = flight_data_dict[0]["data"][0]["route"][1]["local_departure"]
+    flight_info = fd(price, origin_city, origin_airport, destination_city, destination_airport, out_date, return_date)
+    return flight_info
+
 
 sheet_data = DataManager() 
 
-
 #add some data to the google sheet first assumes city not in sheet
-city_input = "Reno"
 start_location = "Los Angeles"
-#sheet_data.add_data(city_input, fs.loc_to_iata(city_input))
-#sheet_data.add_data("Reno")
+
+#eventually allow user to input cities 
+city_input = "Reno"
+sheet_data.add_data(city_input, fs.loc_to_iata(city_input))
 
 
 
 
-flight_data_dict = fs.search_flights(fs.loc_to_iata(start_location), [fs.loc_to_iata(city_input)])
-print(flight_data_dict)
-price = flight_data_dict[0]["data"][0]["price"]
-origin_city = flight_data_dict[0]["data"][0]["route"][0]["cityFrom"]
-origin_airport = flight_data_dict[0]["data"][0]["route"][0]["flyFrom"]
-destination_city = flight_data_dict[0]["data"][0]["route"][0]["cityTo"]
-destination_airport = flight_data_dict[0]["data"][0]["route"][0]["flyTo"]
-out_date = flight_data_dict[0]["data"][0]["route"][1]["local_departure"]
-return_date = flight_data_dict[0]["data"][0]["route"][1]["local_departure"]
+#holds all rows in sheet
+sheet_dict = sheet_data.get_data()["prices"]
 
+#read iata from sheet, and generate flight data
 flight_data_list = []
-flight_data_list.append(fd(price, origin_city, origin_airport, destination_city, destination_airport, out_date, return_date))
+for row in sheet_dict:
+    flight_data = search_to_flight_data(fs.loc_to_iata(start_location),row["iataCode"])
+    flight_data_list.append(flight_data)
 
-#update price after obtaining all flight data
-sheet_dict = sheet_data.get_data()
-print(sheet_dict)
-for (row,info) in zip(sheet_dict["prices"],flight_data_list): 
+#update price after obtaining prices
+for (row,info) in zip(sheet_dict,flight_data_list): 
     sheet_data.update_row_price(row["id"],info.price)
