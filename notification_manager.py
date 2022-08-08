@@ -8,9 +8,8 @@ USER_PHONE_NUMBER = os.environ.get("USER_PHONE_NUMBER")
 
 # Find your Account SID and Auth Token at twilio.com/console
 # and set the environment variables. See http://twil.io/secure
-account_sid = os.environ['TWILIO_SID']
-auth_token = os.environ['TWILIO_AUTH_TOKEN']
-client = Client(account_sid, auth_token)
+
+client = Client(TWILIO_SID, TWILIO_AUTH_TOKEN)
 
 
 
