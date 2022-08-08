@@ -23,6 +23,5 @@ class NotificationManager:
                                     from_=TWILIO_PHONE_NUMBER,
                                     to=USER_PHONE_NUMBER
                                 )
-        print(message.sid)
         pass
     pass
