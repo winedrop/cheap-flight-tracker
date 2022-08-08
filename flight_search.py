@@ -33,6 +33,8 @@ class FlightSearch:
                 "one_for_city":"1",
                 "curr":"USD",
                 "flight_type":"round",
+                "nights_in_dst_from":0,
+                "nights_in_dst_to":10,
                 "max_stopovers":"0"
             }
             response = requests.get(
@@ -41,7 +43,7 @@ class FlightSearch:
                 headers=headers
             )
             search_results.append(response.json())
-        print(search_results)
+            pass
         return search_results
         pass
     
