@@ -1,14 +1,18 @@
+import sys
 import requests
 import os
+import pandas as pd
+from flight_search import FlightSearch 
 
+SHEETY_ENDPOINT = "https://api.sheety.co/1db8be9d672ce7fb4dda78c9c9791eb9/dataFlightDeals/prices"
+SHEETY_AUTH_CODE = os.environ.get("SHEETY_AUTH_CODE")
 #manages the data within google sheets
     #needs to be able to input iata codes from the flight api
 class DataManager:
-    def __init__(self, endpoint: str):
-        self.endpoint = endpoint
-        self.auth_code = os.environ.get("SHEETY_AUTH_CODE")
+    def __init__(self):
+        self.endpoint = SHEETY_ENDPOINT
         self.headers= {
-            "Authorization": "Bearer " + self.auth_code
+            "Authorization": "Bearer " + SHEETY_AUTH_CODE
         }
         
         pass
@@ -17,29 +21,45 @@ class DataManager:
         self.response = requests.get(url=self.endpoint, headers=self.headers)
         return self.response.json()
     
-    #input iata codes based on the airport/city
-    def add_data(self, **kwargs):
-        kwargs = {
-            "City":"noname",
-            "IATA Code":"n/a",
-            "Lowest Price":"n/a",
-        }
+    #add a new row, takes city as input
+    ##from city input, will find iata code and price from flight data
+    def add_data(self, city: str, iata_code: str, max_price=sys.maxsize):
         row = {
             "price":{
-                "city":kwargs["City"],
-                "iatacode":kwargs["IATA Code"],
-                "lowestPrice":kwargs["Lowest Price"],
+                "city":city,
+                "iataCode":iata_code,
+                "lowestPrice":"",
+                "maxPrice":max_price
             }
         }
         self.response = requests.post(url=self.endpoint, headers=self.headers, json=row)
         pass
+    
+    #update all prices on the sheet
+    # def update_all(self):
+    #     data = pd.DataFrame(self.get_data()["prices"])
+    #     print(data)
+        
+    #     #update_row_price()
+    #     for (index,row) in data:
+    #         city = row["City"]
+    #         FlightSearch.search_flights(city)
 
-    #update existing rows in sheet
-    def edit_row(self, city: str):
+
+    #     pass
+    
+    #update price by row
+    def update_row_price(self, row_id: int, price: int):
+        row_endpoint = self.endpoint + f"/{row_id}"
+        data = {
+            "price":{
+                "lowestPrice":str(price)
+            }
+        }
+        self.response = requests.put(url=row_endpoint, headers=self.headers, json=data)
         pass
     
-    def update_data(self):
-        self.response = requests.get(url=self.endpoint, headers=self.headers)
-        self.data = self.response.json()
-        pass
+    
+
+
     pass
