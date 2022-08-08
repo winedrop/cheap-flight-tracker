@@ -1,7 +1,9 @@
 #This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the program requirements.
+from queue import Empty
 from data_manager import DataManager
 from flight_search import FlightSearch as fs
 from flight_data import FlightData as fd
+from notification_manager import NotificationManager 
 import json
 import pandas
 
@@ -9,7 +11,6 @@ import pandas
 #processes raw flight search data(json) from tequila into FlightData object
 def search_to_flight_data(flight_origin_iata: str, flight_destination_iata) -> fd:
     flight_data_dict = fs.search_flights(flight_origin_iata, [flight_destination_iata])
-    print(flight_data_dict)
     price = flight_data_dict[0]["data"][0]["price"]
     origin_city = flight_data_dict[0]["data"][0]["route"][0]["cityFrom"]
     origin_airport = flight_data_dict[0]["data"][0]["route"][0]["flyFrom"]
@@ -31,8 +32,6 @@ city_input = "Reno"
 sheet_data.add_data(city_input, fs.loc_to_iata(city_input))
 
 
-
-
 #holds all rows in sheet
 sheet_dict = sheet_data.get_data()["prices"]
 
@@ -45,3 +44,18 @@ for row in sheet_dict:
 #update price after obtaining prices
 for (row,info) in zip(sheet_dict,flight_data_list): 
     sheet_data.update_row_price(row["id"],info.price)
+
+
+#if lowestPrice is less than maxPrice, then send notification via twilio
+##sheet_dict
+##flight_data_list
+###index of each correspond to the same sheet row
+flight_notification = ""
+sheet_dict = sheet_data.get_data()["prices"]
+for (row,flight_info) in zip(sheet_dict,flight_data_list):
+    flight_price = row["lowestPrice"]
+    max_price = row["maxPrice"]
+    if int(flight_price) < max_price:
+        flight_notification = flight_notification + flight_info.flight_details()
+if(flight_notification != ""):
+    NotificationManager.sendNotification(flight_notification)
