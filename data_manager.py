@@ -35,19 +35,6 @@ class DataManager:
         self.response = requests.post(url=self.endpoint, headers=self.headers, json=row)
         pass
     
-    #update all prices on the sheet
-    # def update_all(self):
-    #     data = pd.DataFrame(self.get_data()["prices"])
-    #     print(data)
-        
-    #     #update_row_price()
-    #     for (index,row) in data:
-    #         city = row["City"]
-    #         FlightSearch.search_flights(city)
-
-
-    #     pass
-    
     #update price by row
     def update_row_price(self, row_id: int, price: int):
         row_endpoint = self.endpoint + f"/{row_id}"
