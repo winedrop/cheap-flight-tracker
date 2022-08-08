@@ -12,6 +12,6 @@ class FlightData:
     pass
 
     def flight_details(self) -> str:
-        flight_details = f"Flight from {self.origin_city} to {self.destination_city}:\n-price: ${self.price}\n-departure date: {self.out_date}\n-return_date: {self.return_date}"
+        flight_details = f"Flight from {self.origin_city} to {self.destination_city}:\n-price: ${self.price}\n-departure date: {self.out_date}\n-return_date: {self.return_date}\n-airport: {self.origin_airport} -> {self.destination_airport}\n\n"
         return flight_details
         pass
