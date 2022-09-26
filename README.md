@@ -6,4 +6,4 @@ APIs used in project
     kiwi tequila - used to gather flight data
     sheety - used to read data from google sheets
     
-Project idea from london app brewery '100 days of code', coded from scratch
+Project idea from london app brewery '100 days of code', coded from scratch, except for the empty starting files
